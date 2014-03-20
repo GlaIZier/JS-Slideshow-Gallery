@@ -1,4 +1,4 @@
 JS-Slideshow-Gallery
 ====================
 
-Simple gallery on pure JS
+Slideshow photo-video gallery on pure JS.
