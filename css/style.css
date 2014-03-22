@@ -1,0 +1,79 @@
+/* background color: black */
+body {margin:0; padding:5px; font:11px Verdana,Arial}
+
+/*my. was width:506px;  text color. */
+#wrapper {width:540px; margin:50px auto; color:#fff}
+
+/* neitralize default browser styles */
+#wrapper * {margin:0; padding:0}
+
+/*my. was width:500px; */
+#fullsize {position:relative; width:534px; height:300px; padding:2px; border:1px solid #ccc; background:#000}
+
+/*my. was width:500px; */
+#information {position:absolute; bottom:0; width:534px; height:71px; background:#000; color:#fff; overflow: hidden; z-index:200; opacity:.7; filter:alpha(opacity=70)}
+
+#information h3 {padding:4px 8px 3px; font-size:14px}
+
+#information p {padding:0 8px 8px}
+
+/* my. was width:500px; + another solution hor-align: delete text-align. */
+#photovideo {width:534px; text-align: center; height: 300px;}
+
+/* my. it was height: auto */
+/*
+#photovideo img {position:absolute; z-index:25; height:300px; border-left-color: #000; border-left-style: solid; border-left-width: 30px;}
+*/
+
+/* TODO after write the script to compute image ratio. my. was width:500px; + another solution hor-align: delete text-align: margin: auto; display: block; */
+#photovideo img { z-index:25; height:300px; max-width: 534px}
+
+/* my. + was width:500px; */ 
+#photovideo video { z-index:25; height:300px; max-width: 534px; controls}
+
+.nav {position:absolute; width:8%; height:270px; cursor:pointer; z-index:150}
+
+#prev {left:0; background:url(../images/left.gif) left center no-repeat; opacity: 0.25}
+
+/* my. */
+#prev:hover {opacity: 0.5}
+
+#next {right:0; background:url(../images/right.gif) right center no-repeat; opacity: 0.25}
+
+/* my. */
+#next:hover {opacity: 0.5}
+
+/*
+#link {position:absolute; height:306px; width:100%; z-index:100; opacity:.4; filter:alpha(opacity=40)}
+
+.linkhover {background:url(../images/link.gif) center center no-repeat}
+*/
+
+
+/* indent from bottom of the #image */
+#thumbnails {margin-top:15px}
+
+#slideleft {float:left; width:20px; height:90px; background:url(../images/scroll-left.gif) center center no-repeat; background-color:#eee}
+
+#slideleft:hover {background-color:#ddd}
+
+#slideright {float:right; width:20px; height:90px; background:#eee url(../images/scroll-right.gif) center center no-repeat}
+
+#slideright:hover {background-color:#ddd}
+
+/*my. was width:456px; */
+#slidearea {float:left; position:relative; width:490px; margin-left:5px; height:90px; overflow:hidden;}
+
+/*my. add */
+#slider {position:absolute; left:0; height:90px; width:0px;}
+
+/* my.; than delete border:1px solid #666; padding: 2px;*/
+#slider img {cursor:pointer; height: 90px;}
+
+/* my.; than delete border:1px solid #666; padding: 2px;*/
+#slider video {cursor:pointer; height:90px;}
+
+
+/* my */
+#serviceinfo {width: 50px;}
+
