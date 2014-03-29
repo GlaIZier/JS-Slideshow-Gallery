@@ -271,20 +271,17 @@ Gallery._animateSlide = function(direction, slidedPixels) {
 
    // stop animation if was slided given number of pixels, or stop at right corner, or stop at left corner
    if (slidedPixels >= Gallery._PX_TO_SLIDE) {
-      Gallery._animateSlide.isAnimation = false;
       return;
    }
    // stop at left corner of slider
    if (prevLeft > 0) {
       $("slider").style.left = "0px";
-      Gallery._animateSlide.isAnimation = false;
       return;
    }
    //stop at right corner of slider
    if (-prevLeft > sliderWidth - slideAreaWidth) {
       $("slider").style.left = -sliderWidth + slideAreaWidth + "px";
       Gallery.loadThumbsPortion();
-      Gallery._animateSlide.isAnimation = false;
       return;
    }
 
