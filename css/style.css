@@ -5,17 +5,17 @@ body {margin:0; padding:5px; font:11px Verdana,Arial}
 #wrapper {width:540px; margin:50px auto; color:#fff}
 
 /* neitralize default browser styles */
-#wrapper * {margin:0; padding:0}
+#wrapper * {margin:0;}
 
 /*my. was width:500px; */
-#fullsize {position:relative; width:534px; height:300px; padding:2px; border:1px solid #ccc; background:#000}
+#fullsize {position:relative; width:534px; height:300px; padding:2px; border:1px solid #ccc; background:#000;}
 
 /*my. was width:500px; */
-#information {position:absolute; bottom:0; width:534px; height:71px; background:#000; color:#fff; overflow: hidden; z-index:200; opacity:.7; filter:alpha(opacity=70)}
+#information {position:absolute; bottom:0; width:534px; height:0px; background:#000; color:#fff; overflow: hidden; z-index:200; opacity:.7; filter:alpha(opacity=70); text-align: center;}
 
 #information h3 {padding:4px 8px 3px; font-size:14px}
 
-#information p {padding:0 8px 8px}
+#information p {padding: 8px 8px 8px;}
 
 /* my. was width:500px; + another solution hor-align: delete text-align. */
 #photovideo {width:534px; text-align: center; height: 300px;}
@@ -26,12 +26,14 @@ body {margin:0; padding:5px; font:11px Verdana,Arial}
 */
 
 /* TODO after write the script to compute image ratio. my. was width:500px; + another solution hor-align: delete text-align: margin: auto; display: block; */
-#photovideo img { z-index:25; height:300px; max-width: 534px}
+/* add vertical-align: middle */
+#photovideo img { z-index:25; height:300px; max-width: 534px; vertical-align: middle;}
 
 /* my. + was width:500px; */ 
 #photovideo video { z-index:25; height:300px; max-width: 534px; controls}
 
-.nav {position:absolute; width:8%; height:270px; cursor:pointer; z-index:150}
+/* height smaller than #photovideo for buttons in the video. padding-top for center next, prev buttons*/
+.nav {position:absolute; width:8%; height:270px; cursor:pointer; z-index:150; padding-top: 30px;}
 
 #prev {left:0; background:url(../images/left.gif) left center no-repeat; opacity: 0.25}
 
