@@ -7,6 +7,7 @@ function $$(tagName, parentElement) {
    return parentElement.getElementsByTagName(tagName); 
 }
 
+// get style of an element
 function getStyle(element, propertyName) {
    // return error if can't get style
    var style = "error";
@@ -29,31 +30,29 @@ Gallery.init = function() {
    Gallery._PX_TO_SLIDE = parseInt(getStyle($("slidearea"), "width"), 10);
    Gallery._SLIDER_SPACE = 4;
    Gallery._PX_TO_CLIMB_UP = 71;
-   Gallery._DISAPPEAR_INFO_TIME = 500;
    // animation 
    Gallery._ANIMATION_FRAME_RATE = 80;
    // speed per frame
    Gallery._PX_SLIDE_SPEED = 15;
    Gallery._OPACITY_SPEED = 0.05;
-   Gallery._PX_CLIMB_UP_SPEED = Gallery._OPACITY_SPEED * 100;
+   Gallery._PX_CLIMB_UP_SPEED = 3;
    
    // array for next to load thumb resource, servlet link and thumbnails 
    Gallery.photoVideoHolder = Gallery.formPhotoVideoList();
-   // current shown photo or video. Number matches to index in photoVideoHolder
-   Gallery.shownPhotoVideoNum = 1;
-   Gallery.loadShownPhotoVideo();
+   // show first photo-video. Number of photo-video matches to index in photoVideoHolder
+   Gallery.loadShownPhotoVideo(1);
    Gallery.loadThumbsPortion();
    
    // add next-prev events 
    $("next").onclick = function() { if (Gallery.shownPhotoVideoNum === Gallery.photoVideoHolder.length - 1) return; 
-      Gallery.shownPhotoVideoNum++; Gallery.loadShownPhotoVideo(); };
+      Gallery.loadShownPhotoVideo( Gallery.shownPhotoVideoNum + 1); };
    $("prev").onclick = function() { if (Gallery.shownPhotoVideoNum === 1) return; 
-      Gallery.shownPhotoVideoNum--; Gallery.loadShownPhotoVideo(); };
+      Gallery.loadShownPhotoVideo(Gallery.shownPhotoVideoNum -1); };
    // add sliders events in thumbs
-   $("slideleft").onclick = function() { Gallery._animateSlide(-1); };
-   $("slideright").onclick = function() { Gallery._animateSlide(1); };
-   $("fullsize").onmouseenter = function() { Gallery._animateInfo(1, undefined, false); };
-   $("fullsize").onmouseleave = function() { Gallery._animateInfo(-1, undefined, false); };
+   $("slideleft").onclick = function() { Gallery.animateSlide(-1); };
+   $("slideright").onclick = function() { Gallery.animateSlide(1); };
+   $("photovideo").onmouseenter = function() { Gallery.animateInfo(1, undefined, false); };
+   $("photovideo").onmouseleave = function() { Gallery.animateInfo(-1, undefined, false); };
 };
 
 /**
@@ -120,9 +119,7 @@ Gallery.loadThumbsPortion = function() {
          sliderChildren[_thumbNum].addEventListener( "click", function (e) {
             // if was click on the same picture no animation
             if (Gallery.shownPhotoVideoNum ===  _thumbNum + 1) return;
-            // TODO change near markup change. bug during fast switching. Transmit num as parameter inside function
-            Gallery.shownPhotoVideoNum = _thumbNum + 1;
-            Gallery.loadShownPhotoVideo();
+            Gallery.loadShownPhotoVideo(_thumbNum + 1, undefined, undefined);
          }, false);
       })(thumbNum);
    }
@@ -134,58 +131,49 @@ Gallery.loadThumbsPortion = function() {
 
 /**
  * Loads new photo or video to frame
- * Call this function without parameters (or only with direction parameter).
+ * Call this function with photoVideoNumToShow parameter and direction if you need
  */
-// Direction: '-1' - fade; '+1' - ignition
-// Alg: animate info slide down; fade to opacity 0, change photo or video; check image photovideo ratio,
-//    flare to opacity 1 and animate info slide up. (synchronous execution of async functions).
-Gallery.loadShownPhotoVideo = function(direction, opacity) {
+// Direction: '-1' - fade (default); '+1' - ignition
+// Alg: fade to opacity 0, change photo or video; check image photovideo ratio,
+//    flare to opacity 1. (synchronous execution of async functions).
+Gallery.loadShownPhotoVideo = function(photoVideoNumToShow, direction, opacity) {
    // was called externally
-   if (typeof (direction) === "undefined") {
-      // start info animation down
-      Gallery._animateInfo();
-      return;
-   }
+   if (typeof (direction) === "undefined") direction = -1;
    // fade from 1 (initial) to 0
    if (typeof (opacity) === "undefined" && direction === -1) opacity = 1;
    // ignition from 0 (initial) to 1
    if (typeof (opacity) === "undefined" && direction === 1) opacity = 0;
-   
+
    // if fade ended (or it was call from init) change html, check ratio, start ignition and stop fade
    if ((opacity < 0 && direction === -1) || (!$("photovideo").children[$("photovideo").children.length - 1])) {
-      $("photovideo").innerHTML = Gallery._getMarkupPhotoVideo(Gallery.shownPhotoVideoNum, "photo-video/");
-      Gallery._repairElementRatio($("photovideo").children[$("photovideo").children.length - 1]);
-      Gallery.loadShownPhotoVideo(1);
+      $("photovideo").innerHTML = Gallery._getMarkupPhotoVideo(photoVideoNumToShow, "photo-video/");
+      Gallery.shownPhotoVideoNum = photoVideoNumToShow;
+      Gallery.repairElementRatio($("photovideo").children[$("photovideo").children.length - 1]);
+      // animate flare new photo-video
+      Gallery.loadShownPhotoVideo(undefined, 1, undefined);
       return;
    }
    // end of animation (ignition ended)
-   if (opacity > 1 && direction === 1) {
-      // start slide up info animation
-      Gallery._animateInfo(1);
-      return;
-   }
+   if (opacity > 1 && direction === 1) return;
 
    $("photovideo").children[$("photovideo").children.length - 1].style.opacity = opacity;
    window.setTimeout(function () {
-      Gallery.loadShownPhotoVideo(direction, opacity + direction * Gallery._OPACITY_SPEED);
+      Gallery.loadShownPhotoVideo(photoVideoNumToShow, direction, opacity + direction * Gallery._OPACITY_SPEED);
    }, 1000 / Gallery._ANIMATION_FRAME_RATE);
 };
 
-
-// Animates information for Photo Video frame down and then up
-// Call function without slidedPixels parameter. Other parameters are optional.
-// Default values: direction = -1; showNewPhotoVideo = true
+// Animates information for Photo Video frame down and up
+// Call function without parameters. slidedPixels parameter is optional.
+// Default values: direction = -1
 // Direction: "-1" - animate slide down; "+1" - animate slide up
-Gallery._animateInfo = function(direction, slidedPixels, showNewPhotoVideo) {
-   if (typeof (showNewPhotoVideo) === "undefined") showNewPhotoVideo = true;
-   // if func has been just called without parameters
+Gallery.animateInfo = function(direction, slidedPixels) {
+      // if func has been just called without parameters
    if (typeof (direction) === "undefined") direction = -1;
    // if func has been just called to slide down or up
    if (typeof (slidedPixels) === "undefined") {
-      // if call from init then force 0; TODO delete this if evrything is ok after tests
-      //if (!$("information").children[0] ) slidedPixels = 0;
       slidedPixels = $("information").offsetHeight;
-     // if (slidedPixels !== 0 && slidedPixels !== Gallery._PX_TO_CLIMB_UP) return;
+      // stop previous animation if there is one
+      clearTimeout(Gallery.animateInfo.infoAnimationTimer);
       // if func has been just called to slide up
       if (direction === 1) {
          // add markup inside 'information' div
@@ -200,21 +188,18 @@ Gallery._animateInfo = function(direction, slidedPixels, showNewPhotoVideo) {
    if (slidedPixels < 0 && direction === -1) {
       $("information").innerHTML = "";
       $("information").style.height = "0px";
-      // start animation to show new frame
-      if (showNewPhotoVideo) Gallery.loadShownPhotoVideo(-1);
       return;
    }
    // stop animation slide up (stop recursion)
    if (slidedPixels > Gallery._PX_TO_CLIMB_UP && direction === 1) {
       $("information").style.height = Gallery._PX_TO_CLIMB_UP + "px";
-      if (showNewPhotoVideo)
-         window.setTimeout("Gallery._animateInfo(-1, undefined, false)", Gallery._DISAPPEAR_INFO_TIME);
       return;
    }
 
    $("information").style.height = slidedPixels + "px";
-   window.setTimeout(function () {
-      Gallery._animateInfo(direction, slidedPixels + direction * Gallery._PX_CLIMB_UP_SPEED, showNewPhotoVideo);
+   // use static functional var to track previous animation
+   Gallery.animateInfo.infoAnimationTimer = window.setTimeout(function () {
+      Gallery.animateInfo(direction, slidedPixels + direction * Gallery._PX_CLIMB_UP_SPEED);
    }, 1000 / Gallery._ANIMATION_FRAME_RATE);
 };
 
@@ -263,7 +248,7 @@ Gallery.fillSliderWidth = function() {
 // Animate slide in thumbnails
 // Call function only with direction parameter or without at all(direction = -1 then);
 // Direction: "-1" - animate to left; "+1" - animate to right
-Gallery._animateSlide = function(direction, slidedPixels) {
+Gallery.animateSlide = function(direction, slidedPixels) {
    if (typeof (direction) === "undefined") direction = -1;
    // if it was called first time
    if (typeof (slidedPixels) === "undefined") slidedPixels = 0;
@@ -289,12 +274,12 @@ Gallery._animateSlide = function(direction, slidedPixels) {
 
    $("slider").style.left = (prevLeft - direction * Gallery._PX_SLIDE_SPEED) + "px";
    window.setTimeout(function () {
-      Gallery._animateSlide(direction, slidedPixels + Gallery._PX_SLIDE_SPEED);
+      Gallery.animateSlide(direction, slidedPixels + Gallery._PX_SLIDE_SPEED);
    }, 1000 / Gallery._ANIMATION_FRAME_RATE);
 };
 
 // Repair image ratio if it doesn't fit to the frame horizontal
-Gallery._repairElementRatio = function(element) {
+Gallery.repairElementRatio = function(element) {
    if (element.tagName.toLowerCase() === "img") {
       element.addEventListener("load", function (e) {
          var ratio = (element.width / element.height);
@@ -329,3 +314,81 @@ Gallery._insertHelpSpan = function(insideElement) {
    $("helpspan").style.height = "100%";
    $("helpspan").style.verticalAlign = "middle";
 };
+
+/* TODO Delete after testing. Previous functional
+Gallery.loadShownPhotoVideo = function(direction, opacity) {
+   // was called externally
+   if (typeof (direction) === "undefined") {
+      // start info animation down
+      Gallery._animateInfo();
+      return;
+   }
+   // fade from 1 (initial) to 0
+   if (typeof (opacity) === "undefined" && direction === -1) opacity = 1;
+   // ignition from 0 (initial) to 1
+   if (typeof (opacity) === "undefined" && direction === 1) opacity = 0;
+
+   // if fade ended (or it was call from init) change html, check ratio, start ignition and stop fade
+   if ((opacity < 0 && direction === -1) || (!$("photovideo").children[$("photovideo").children.length - 1])) {
+      $("photovideo").innerHTML = Gallery._getMarkupPhotoVideo(Gallery.shownPhotoVideoNum, "photo-video/");
+      Gallery._repairElementRatio($("photovideo").children[$("photovideo").children.length - 1]);
+      Gallery.loadShownPhotoVideo(1);
+      return;
+   }
+   // end of animation (ignition ended)
+   if (opacity > 1 && direction === 1) {
+      // start slide up info animation
+      Gallery._animateInfo(1);
+      return;
+   }
+
+   $("photovideo").children[$("photovideo").children.length - 1].style.opacity = opacity;
+   window.setTimeout(function () {
+      Gallery.loadShownPhotoVideo(direction, opacity + direction * Gallery._OPACITY_SPEED);
+   }, 1000 / Gallery._ANIMATION_FRAME_RATE);
+};
+
+// Animates information for Photo Video frame down and then up
+// Call function without slidedPixels parameter. Other parameters are optional.
+// Default values: direction = -1; showNewPhotoVideo = true
+// Direction: "-1" - animate slide down; "+1" - animate slide up
+Gallery._animateInfo = function(direction, slidedPixels, showNewPhotoVideo) {
+   if (typeof (showNewPhotoVideo) === "undefined") showNewPhotoVideo = true;
+   // if func has been just called without parameters
+   if (typeof (direction) === "undefined") direction = -1;
+   // if func has been just called to slide down or up
+   if (typeof (slidedPixels) === "undefined") {
+      slidedPixels = $("information").offsetHeight;
+     // if (slidedPixels !== 0 && slidedPixels !== Gallery._PX_TO_CLIMB_UP) return;
+      // if func has been just called to slide up
+      if (direction === 1) {
+         // add markup inside 'information' div
+         $("information").innerHTML = "<p>" + Gallery.photoVideoHolder[Gallery.shownPhotoVideoNum][2] + "</p>";
+         // if video in frame then don't show information
+         if ($("photovideo").children[$("photovideo").children.length - 1] &&
+            $("photovideo").children[$("photovideo").children.length - 1].tagName.toLowerCase() === "video") return;
+         }
+   }
+
+   // stop animation slide down (stop recursion)
+   if (slidedPixels < 0 && direction === -1) {
+      $("information").innerHTML = "";
+      $("information").style.height = "0px";
+      // start animation to show new frame
+      if (showNewPhotoVideo) Gallery.loadShownPhotoVideo(-1);
+      return;
+   }
+   // stop animation slide up (stop recursion)
+   if (slidedPixels > Gallery._PX_TO_CLIMB_UP && direction === 1) {
+      $("information").style.height = Gallery._PX_TO_CLIMB_UP + "px";
+      if (showNewPhotoVideo)
+         window.setTimeout("Gallery._animateInfo(-1, undefined, false)", Gallery._DISAPPEAR_INFO_TIME);
+      return;
+   }
+
+   $("information").style.height = slidedPixels + "px";
+   window.setTimeout(function () {
+      Gallery._animateInfo(direction, slidedPixels + direction * Gallery._PX_CLIMB_UP_SPEED, showNewPhotoVideo);
+   }, 1000 / Gallery._ANIMATION_FRAME_RATE);
+};
+*/
