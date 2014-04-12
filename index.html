@@ -33,12 +33,20 @@
 			<div id="slideright" title="Slide Right"></div>
 	    </div>
        
-        <div id="serviceinfo" title="Service Info">
-           <input id="servletlink" type="hidden" value="thumbnails/">
-           <input id="photovideolist" type="hidden" value="1.jpg:img:Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam ut urna. Mauris nulla. Donec nec mauris. Proin nulla dolor, bibendum et, dapibus in, euismod ut, felis.;2.jpg:img:Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam ut urna. Mauris nulla. Donec nec mauris. Proin nulla dolor, bibendum et, dapibus in, euismod ut, felis.;3.jpg:img;2.mp4:video:Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam ut urna. Mauris nulla. Donec nec mauris. Proin nulla dolor, bibendum et, dapibus in, euismod ut, felis.;4_vertical.jpg:img;4_horizontal.jpg:img;4.jpg:img;5.jpg:img;6.jpg:img;7.jpg:img;8.jpg:img;9.jpg:img;10.jpg:img;2.mp4:video;1.jpg:img;2.jpg:img;3.jpg:img;4.jpg:img;5.jpg:img;6.jpg:img;7.jpg:img;8.jpg:img;9.jpg:img;10.jpg:img;2.mp4:video;1.jpg:img;2.jpg:img;3.jpg:img;4.jpg:img;5.jpg:img;6.jpg:img;7.jpg:img;8.jpg:img;9.jpg:img;10.jpg:img;2.mp4:video">
-        </div>
+       <div id="serviceinfo" title="Service Info">
+          <input id="servletlink" type="hidden" value="thumbnails/">
+          <input id="photovideolist" type="hidden" value="1.jpg:img:Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam ut urna. Mauris nulla. Donec nec mauris. Proin nulla dolor, bibendum et, dapibus in, euismod ut, felis.;2.jpg:img:Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam ut urna. Mauris nulla. Donec nec mauris. Proin nulla dolor, bibendum et, dapibus in, euismod ut, felis.;3.jpg:img;2.mp4:video:Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam ut urna. Mauris nulla. Donec nec mauris. Proin nulla dolor, bibendum et, dapibus in, euismod ut, felis.;4_vertical.jpg:img;4_horizontal.jpg:img;4.jpg:img;5.jpg:img;6.jpg:img;7.jpg:img;8.jpg:img;9.jpg:img;10.jpg:img;2.mp4:video;1.jpg:img;2.jpg:img;3.jpg:img;4.jpg:img;5.jpg:img;6.jpg:img;7.jpg:img;8.jpg:img;9.jpg:img;10.jpg:img;2.mp4:video;1.jpg:img;2.jpg:img;3.jpg:img;4.jpg:img;5.jpg:img;6.jpg:img;7.jpg:img;8.jpg:img;9.jpg:img;10.jpg:img;2.mp4:video">
+          <label> <input id="show_modal_window" type="checkbox"> Show modal window instead of switching photo/video</label>
+       </div>
+
     </div>
-    
+
+   <div id="overlay">
+      <div id="modal_photovideo">
+         <!--<p> <div id="close_modal_window" onclick="Gallery.overlayModalWindow()"> Close </div> </p>-->
+      </div>
+      <img id="close_modal_window" onclick="Gallery.overlayModalWindow()" src="images/close.gif" alt="Can't load image!">
+   </div>
 
 </body>
 </html>

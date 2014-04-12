@@ -36,6 +36,10 @@ Gallery.init = function() {
    Gallery._PX_SLIDE_SPEED = 15;
    Gallery._OPACITY_SPEED = 0.05;
    Gallery._PX_CLIMB_UP_SPEED = 3;
+
+   Gallery._MODAL_WINDOW_BACKGROUND_OPACITY = 0.8;
+   // TODO delete after tests
+   Gallery._SHOW_MODAL_WINDOW = true;
    
    // array for next to load thumb resource, servlet link and thumbnails 
    Gallery.photoVideoHolder = Gallery.formPhotoVideoList();
@@ -53,6 +57,9 @@ Gallery.init = function() {
    $("slideright").onclick = function() { Gallery.animateSlide(1); };
    $("photovideo").onmouseenter = function() { Gallery.animateInfo(1, undefined, false); };
    $("photovideo").onmouseleave = function() { Gallery.animateInfo(-1, undefined, false); };
+   // TODO delete after tests
+//   myWindow = window.open('', 'header', 'menubar=0', 'toolbar=0');
+//   myWindow.document.write('<font color=red>Hello World!</font>');
 };
 
 /**
@@ -117,9 +124,12 @@ Gallery.loadThumbsPortion = function() {
          // add click listeners to thumbs
          // use closure to save current thumbNum from 'for' loop
          sliderChildren[_thumbNum].addEventListener( "click", function (e) {
-            // if was click on the same picture no animation
-            if (Gallery.shownPhotoVideoNum ===  _thumbNum + 1) return;
-            Gallery.loadShownPhotoVideo(_thumbNum + 1, undefined, undefined);
+            if ($("show_modal_window").checked) Gallery.overlayModalWindow(_thumbNum + 1);
+            else {
+               // if was click on the same picture no animation
+               if (Gallery.shownPhotoVideoNum ===  _thumbNum + 1) return;
+               Gallery.loadShownPhotoVideo(_thumbNum + 1, undefined, undefined);
+            }
          }, false);
       })(thumbNum);
    }
@@ -162,12 +172,12 @@ Gallery.loadShownPhotoVideo = function(photoVideoNumToShow, direction, opacity) 
    }, 1000 / Gallery._ANIMATION_FRAME_RATE);
 };
 
-// Animates information for Photo Video frame down and up
-// Call function without parameters. slidedPixels parameter is optional.
+/** Animates information for Photo Video frame down and up
+    Call function with direction parameter. "-1" - animate slide down; "+1" - animate slide up
+*/
 // Default values: direction = -1
-// Direction: "-1" - animate slide down; "+1" - animate slide up
 Gallery.animateInfo = function(direction, slidedPixels) {
-      // if func has been just called without parameters
+   // if func has been just called without parameters
    if (typeof (direction) === "undefined") direction = -1;
    // if func has been just called to slide down or up
    if (typeof (slidedPixels) === "undefined") {
@@ -245,8 +255,9 @@ Gallery.fillSliderWidth = function() {
    sliderElement.style.width = sliderWidth + "px"; //sliderElement.setAttribute("style","width:" + sliderWidth + "px");
 };
 
-// Animate slide in thumbnails
-// Call function only with direction parameter or without at all(direction = -1 then);
+/** Animate slide in thumbnails
+    Call function only with direction parameter or without at all(direction = -1 then);
+*/
 // Direction: "-1" - animate to left; "+1" - animate to right
 Gallery.animateSlide = function(direction, slidedPixels) {
    if (typeof (direction) === "undefined") direction = -1;
@@ -313,6 +324,61 @@ Gallery._insertHelpSpan = function(insideElement) {
    $("helpspan").style.display = "inline-block";
    $("helpspan").style.height = "100%";
    $("helpspan").style.verticalAlign = "middle";
+};
+
+Gallery.overlayModalWindow = function(photoVideoNumToShow) {
+   if ($("overlay").style.visibility === "visible") {
+      Gallery.animateModalWindow();
+//      $("overlay").style.visibility = "hidden";
+//      $("modal_photovideo").innerHTML = "<p> <div id='close_modal_window' onclick='Gallery.overlayModalWindow()'> Close </div> </p>"
+   }
+   else {
+      $("modal_photovideo").insertAdjacentHTML("afterBegin", Gallery._getMarkupPhotoVideo(photoVideoNumToShow, "photo-video/"));
+      Gallery.animateModalWindow(1);
+//      $("modal_photovideo").insertAdjacentHTML("afterBegin", Gallery._getMarkupPhotoVideo(photoVideoNumToShow, "photo-video/"));
+//      $("overlay").style.visibility ="visible";
+   }
+};
+
+/** Animates Modal Window appearance and disappearance
+    Call function with direction parameter. "-1" - disappearance; "+1" - appearance
+*/
+// Default values: direction = -1
+Gallery.animateModalWindow = function(direction, opacity) {
+   // if func has been just called without parameters
+   if (typeof (direction) === "undefined") direction = -1;
+   // if func has been just called
+   if (typeof (opacity) === "undefined") {
+      opacity = parseInt(getStyle($("overlay"), "opacity"), 10);
+      // stop previous animation if there is one
+      clearTimeout(Gallery.animateModalWindow.modalWindowAnimationTimer);
+      // if func has been just called to slide up
+      if (direction === 1) {
+         $("overlay").style.opacity = 0;
+         $("overlay").style.visibility ="visible";
+      }
+   }
+   // stop animation
+   if (opacity < 0 && direction === -1) {
+      $("overlay").style.visibility = "hidden";
+      $("modal_photovideo").innerHTML = "";
+      $("overlay").style.opacity = 0;
+      $("overlay").style.backgroundColor = "rgba(0, 0, 0, 0)";
+      return;
+   }
+   if (opacity > 1 && direction === 1) {
+      $("overlay").style.opacity = 1;
+      $("overlay").style.backgroundColor = "rgba(0, 0, 0, " + Gallery._MODAL_WINDOW_BACKGROUND_OPACITY + ")";;
+      return;
+   }
+
+   $("overlay").style.opacity = opacity;
+   $("overlay").style.backgroundColor = "rgba(0, 0, 0, " + Gallery._MODAL_WINDOW_BACKGROUND_OPACITY * opacity + ")";
+   //alert(opacity);
+   // use static functional var to track previous animation
+   Gallery.animateModalWindow.modalWindowAnimationTimer = window.setTimeout(function () {
+      Gallery.animateModalWindow(direction, opacity + direction * Gallery._OPACITY_SPEED);
+   }, 1000 / Gallery._ANIMATION_FRAME_RATE);
 };
 
 /* TODO Delete after testing. Previous functional
