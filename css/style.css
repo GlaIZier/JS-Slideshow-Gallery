@@ -1,55 +1,33 @@
-/* background color: black */
 body {margin:0; padding:5px; font:11px Verdana,Arial}
 
-/*my. was width:506px;  text color. */
 #wrapper {width:540px; margin:50px auto; color:#fff}
 
 /* neitralize default browser styles */
 #wrapper * {margin:0;}
 
-/*my. was width:500px; */
 #fullsize {position:relative; width:534px; height:300px; padding:2px; border:1px solid #ccc; background:#000;}
 
-/*my. was width:500px; */
 #information {position:absolute; bottom:0; width:534px; height:0px; background:#000; color:#fff; overflow: hidden; z-index:200; opacity:.7; filter:alpha(opacity=70); text-align: center;}
 
 #information h3 {padding:4px 8px 3px; font-size:14px}
 
 #information p {padding: 8px 8px 8px;}
 
-/* my. was width:500px; + another solution hor-align: delete text-align. */
 #photovideo {width:534px; text-align: center; height: 300px;}
 
-/* my. it was height: auto */
-/*
-#photovideo img {position:absolute; z-index:25; height:300px; border-left-color: #000; border-left-style: solid; border-left-width: 30px;}
-*/
-
-/* TODO after write the script to compute image ratio. my. was width:500px; + another solution hor-align: delete text-align: margin: auto; display: block; */
-/* add vertical-align: middle */
 #photovideo img { z-index:25; height:300px; max-width: 534px; vertical-align: middle;}
 
-/* my. + was width:500px; */ 
 #photovideo video { z-index:25; height:300px; max-width: 534px; controls}
 
-/* height smaller than #photovideo for buttons in the video. padding-top for center next, prev buttons*/
 .nav {position:absolute; width:8%; height:270px; cursor:pointer; z-index:150; padding-top: 30px;}
 
 #prev {left:0; background:url(../images/left.gif) left center no-repeat; opacity: 0.25}
 
-/* my. */
 #prev:hover {opacity: 0.5}
 
 #next {right:0; background:url(../images/right.gif) right center no-repeat; opacity: 0.25}
 
-/* my. */
 #next:hover {opacity: 0.5}
-
-/*
-#link {position:absolute; height:306px; width:100%; z-index:100; opacity:.4; filter:alpha(opacity=40)}
-
-.linkhover {background:url(../images/link.gif) center center no-repeat}
-*/
 
 
 /* indent from bottom of the #image */
@@ -63,26 +41,20 @@ body {margin:0; padding:5px; font:11px Verdana,Arial}
 
 #slideright:hover {background-color:#ddd}
 
-/*my. was width:456px; */
 #slidearea {float:left; position:relative; width:490px; margin-left:5px; height:90px; overflow:hidden;}
 
-/*my. add */
 #slider {position:absolute; left:0; height:90px; width:0px;}
 
-/* my.; than delete border:1px solid #666; padding: 2px;*/
 #slider img {cursor:pointer; height: 90px;}
 
-/* my.; than delete border:1px solid #666; padding: 2px;*/
 #slider video {cursor:pointer; height:90px;}
 
 
-/* my. forms */
 #serviceinfo label { color: #000; }
 
-/* my. overlay images */
 #overlay { visibility: hidden; position: absolute; left: 0px; top: 0px; width:100%; height:100%; text-align:center; z-index: 1000; opacity: 0; background-color: rgba(0, 0, 0, 0.8); }
 
-#overlay div { display: inline-block; /* max-width: 1000px; */ margin: 0 auto; background-color: #fff; border:1px solid #000; padding:5px; text-align:center; }
+#overlay div { display: inline-block; margin: 0 auto; background-color: #fff; border:1px solid #000; padding:5px; text-align:center; }
 
 #close_modal_window { position: absolute; cursor:pointer; border-radius: 2px; top: 5px; padding: 0px 5px; opacity: 0.4; }
 
